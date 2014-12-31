@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <name>Pedal Loader</name>
     <groupId>com.eclecticlogic</groupId>
     <artifactId>pedal-loader</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <description>A DSL for data loading that is particularly suited for unit-testing with the database. The load scripts work at the JPA entity level (not database columns and values but JPA entity properties and "converted" types).</description>
@@ -22,7 +21,7 @@
         <url>git@github.com:eclecticlogic/pedal-loader.gt</url>
         <developerConnection>scm:git:git@github.com:eclecticlogic/pedal-loader.git</developerConnection>
         <connection>scm:git:git@github.com:eclecticlogic/pedal-loader.git</connection>
-        <tag>HEAD</tag>
+        <tag>pedal-loader-1.0.0</tag>
     </scm>
 
     <developers>
