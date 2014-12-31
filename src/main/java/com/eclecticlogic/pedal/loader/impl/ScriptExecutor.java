@@ -274,7 +274,7 @@ public class ScriptExecutor implements LoaderExecutor {
         for (int i = 0; i < scriptContextStack.peek().getAttributes().size(); i++) {
             delegate.setProperty(scriptContextStack.peek().getAttributes().get(i), attributeValues[i]);
         }
-        instance = (Serializable) scriptContextStack.peek().getDefaultRowClosure().call(instance);
+        scriptContextStack.peek().getDefaultRowClosure().call(instance);
         entityManager.persist(instance);
         scriptContextStack.peek().getCreatedEntities().add(instance);
         return instance;

@@ -11,15 +11,9 @@
  **/
 package com.eclecticlogic.pedal.loader;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import com.eclecticlogic.pedal.loader.impl.LoaderImpl;
 
 /**
  * @author kabram.
@@ -30,12 +24,5 @@ import com.eclecticlogic.pedal.loader.impl.LoaderImpl;
 @ComponentScan
 public class JpaConfiguration {
 
-    @PersistenceContext
-    EntityManager entityManager;
 
-
-    @Bean
-    Loader loader() {
-        return new LoaderImpl(entityManager);
-    }
 }

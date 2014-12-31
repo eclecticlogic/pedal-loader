@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.ManagedBean;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -35,6 +36,7 @@ import com.eclecticlogic.pedal.loader.Script;
  * @author kabram.
  *
  */
+@ManagedBean
 public class LoaderImpl implements Loader {
 
     private String scriptDirectory;
