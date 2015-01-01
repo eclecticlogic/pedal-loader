@@ -28,7 +28,7 @@ import java.util.Map;
 public interface Loader extends LoaderExecutor {
 
     /**
-     * @param directory Base directory for scripts
+     * @param directory Base directory for scripts. This is expected to be a classpath resource.
      * @return Fluent interface for continued loading.
      */
     public Loader withScriptDirectory(String directory);
