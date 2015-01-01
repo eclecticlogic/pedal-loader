@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Pedal-loader by eclecticlogic</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Pedal-loader</h1>
+          <h2>A Groovy DSL for easy data loading, particularly suited to database unit-testing.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/eclecticlogic/pedal-loader/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/eclecticlogic/pedal-loader/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/eclecticlogic/pedal-loader" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a id="pedal-loader" class="anchor" href="#pedal-loader" aria-hidden="true"><span class="octicon octicon-link"></span></a>pedal-loader</h1>
+
+<p>A Groovy DSL for data loading that is particularly suited for database unit-testing. The load scripts work at the JPA entity level (not database columns and values but JPA entity properties and higher-level types). </p>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h2>
+
+<p>Download the pedal-loader jar from Maven central:</p>
+
+<pre><code>    &lt;groupId&gt;com.eclecticlogic&lt;/groupId&gt;
+    &lt;artifactId&gt;pedal-loader&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+</code></pre>
+
+<p>Minimum dependencies that you need to provide in your application:</p>
+
+<ol>
+<li>slf4j (over logback or log4j) v1.7.7 or higher</li>
+<li>Spring boot jpa edition or</li>
+<li>hibernate-core and hibernate-entitymanager 4.3 or higher.</li>
+<li>JDBC4 compliant driver.</li>
+<li>groovy-all.jar 2.3 or above</li>
+</ol>
+
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h3>
+
+<h4>
+<a id="vanilla-setup" class="anchor" href="#vanilla-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Vanilla setup</h4>
+
+<p>Create an instance of <code>Loader</code> (concrete class <code>com.eclecticlogic.pedal.loader.impl.LoaderImpl</code>) and give it a reference to an <code>EntityManager</code>. </p>
+
+<h4>
+<a id="spring" class="anchor" href="#spring" aria-hidden="true"><span class="octicon octicon-link"></span></a>Spring</h4>
+
+<p>If you are using @ComponentScan, include the <code>com.eclecticlogic.pedal.loader</code> package in the packages to be scanned. If you are using a Spring managed unit test, setup your test as shown below:</p>
+
+<pre><code>
+     @RunWith(SpringJUnit4ClassRunner.class)
+     @SpringApplicationConfiguration(classes = JpaConfiguration.class)
+     public class MyDatabaseTest {
+
+        @Autowired
+        private Loader loader;
+
+
+        @Test
+        @Transactional
+        public void myTest() {
+            Map&lt;String, Object&gt; variables = loader //
+                .withScriptDirectory("&lt;directory-with-scripts&gt;") // Classpath resource dir
+                .load("script-reference"); 
+            ...
+        }
+    }
+
+</code></pre>
+
+<h2>
+<a id="data-loading" class="anchor" href="#data-loading" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Loading</h2>
+
+<p>The pedal data loader is accessed via the Loader interface. Create your load script as one or more groovy scripts in your classpath.</p>
+
+<p>The Loader interface provides a number of methods to specify your script and input variables for the script. Here are some ways to launch the script:</p>
+
+<pre><code>
+    loader.withScriptDirectory("myScripts").load("basicdata.groovy");
+
+</code></pre>
+
+<p>This specifies that the loader should read the script basicdata.groovy contained within a classpath directory called myScripts. The file could just as well have been specified with the directory as <code>myScripts\basicdata.groovy</code>. However, the withScriptDirectory allows you to setup a well known directory and have all other calls simply reference the script by name without worry about relative paths.</p>
+
+<h3>
+<a id="script-format" class="anchor" href="#script-format" aria-hidden="true"><span class="octicon octicon-link"></span></a>Script Format</h3>
+
+<p>The scripts are simple groovy files. To insert rows into a table, use the table() method. The method takes two parameters and a closure:</p>
+
+<ol>
+<li>Class reference of JPA entity</li>
+<li>List of attributes names you want to populate.</li>
+</ol>
+
+<p>The method returns a list of entities created in the closure.</p>
+
+<p>The closure should have one more more lines of the format:</p>
+
+<pre><code>    row &lt;&lt; value1, value2, value3 ...
+</code></pre>
+
+<p>The values are what you'd populate in the JPA entity, not in the database. So for a foreign key, you'd pass the @JoinColumn object. For a character field mapped to an Enum, you'd pass the actual Enum</p>
+
+<p>Here is an example of a simple script to populate a table and then a child table (i.e., JPA entities called School and Student):</p>
+
+<pre><code>    import com.test.School
+    import com.test.Student
+    import com.test.SchoolType
+    import com.test.Gender
+
+    table(School, ['name', 'type', 'address']) {
+        row 'Lee Elementary', SchoolType.ELEMENTARY, '1 Lee Rd'
+        row 'Park View School', SchoolType.MIDDLE, '10 Elm Street'
+        highSchool = row 'Mountain Top High', SchoolType.HIGH, '12 Dream Street'
+    } 
+
+    println highSchool.id
+
+    myStudents = table(Student, ['name', 'gender', 'school']) {
+        row 'Joe Schmuckately', Gender.MALE, highSchool
+    }
+
+    // myStudents is a list of all the rows created.
+
+    find(Student, 1)
+</code></pre>
+
+<p>If your script expects say a starting primary key value, you can easily pass it as an input:</p>
+
+<pre><code>    Map&lt;String, Object inputs = new HashMap&lt;&gt;();
+    inputs.put("pkStart", 123);
+    loader.withInputs(inputs).load("basicdata.groovy", "secondScript.groovy");
+</code></pre>
+
+<p>The value is now available as a property called pkStart to the script (and to <code>secondScript.groovy</code> as well) and can be referenced directly:</p>
+
+<pre><code>    table(School, ['id', 'name', 'type', 'address']) {
+        row pkStart++, 'Lee Elementary', SchoolType.ELEMENTARY, '1 Lee Rd'
+        row pkStart++, 'Park View School', SchoolType.MIDDLE, '10 Elm Street'
+        highSchool = row pkStart++, 'Mountain Top High', SchoolType.HIGH, '12 Dream Street'
+    } 
+
+</code></pre>
+
+<p>Sometimes the groovy compiler can get confused in evaluating the syntax for the columns. To help the compiler, wrap the column values in parenthesis:</p>
+
+<pre><code>    table(School, ['id', 'name', 'type', 'address']) {
+        row (pkStart++, 'Lee Elementary', SchoolType.ELEMENTARY, '1 Lee Rd')
+        row (pkStart++, 'Park View School', SchoolType.MIDDLE, '10 Elm Street')
+        highSchool = row (pkStart++, 'Mountain Top High', SchoolType.HIGH, '12 Dream Street')
+    } 
+</code></pre>
+
+<p>Since the scripts are groovy based, you can use all groovy control structures to help you populate your data:</p>
+
+<pre><code>    table(MyValue, ['id', 'value']) {
+        10.times { i -&gt;
+            row i, i * 50
+        }
+    }
+</code></pre>
+
+<p>When testing your database functionality, sometimes you need reference to data that already exists. This is particularly important if the data has a generated PK. In the example above we created schools and created a reference to the high school in a variable called <code>highSchool</code>. This variable (strictly speaking, property) is automatically returned to the caller in a map. The key is a string with the value <code>highSchool</code> and the value is an instance of School. </p>
+
+<p><em>Note: Do not declare highschool using a type or <code>def</code> as shown:</em></p>
+
+<pre><code>    table(School, ['id', 'name', 'type', 'address']) {
+        row (pkStart++, 'Lee Elementary', SchoolType.ELEMENTARY, '1 Lee Rd')
+        row (pkStart++, 'Park View School', SchoolType.MIDDLE, '10 Elm Street')
+        def highSchool = row (pkStart++, 'Mountain Top High', SchoolType.HIGH, '12 Dream Street')
+    } 
+</code></pre>
+
+<p>This will make highSchool a local variable and it will not be returned to the caller. Of course, if you need to temporarily hold on to large collections that you don't want to return back to the calling script, then do mark them with a <code>def</code> or type.</p>
+
+<p>If you are invoking multiple scripts and some of the scripts return values that are named the same, you can define namespaces for the scripts. If two scripts <code>myScript1.groovy</code> and <code>myScript2.groovy</code> both create a property called <code>x</code>, you can load the scripts with namespaces as shown:</p>
+
+<pre><code>    Map&lt;String, Object&gt; variables = loader.withInputs(inputs).load(Script.with("myScript1.groovy", "a"), Script.with("myScript2.groovy", "b");
+
+    Map&lt;String, Object&gt; script1Vars = variables.get("a");
+    Object x = script1Vars.get("x");
+</code></pre>
+
+<p>You can also call scripts from within scripts. Use the <code>load()</code> method. The load method accepts a list of script names or a map of <code>namespace:script-name</code>.</p>
+
+<pre><code>
+    output = load('a': 'simple.loader.groovy', 'b': 'simple.loader.groovy') 
+    assert output.a.simple1.amount == 20
+
+    myIndex = 101
+    inputReaderVars = withInput(['index': myIndex]).load('input.reader.groovy')
+    assert inputReaderVars.inputReaderReturn.amount == 101000
+
+</code></pre>
+
+<p>where <code>simple.loader.groovy</code> is:</p>
+
+<pre><code>
+    import com.eclecticlogic.pedal.loader.dm.SimpleType
+
+    table(SimpleType, ['amount']) {
+        simple1 = row 10
+        simple2 = row 20
+    }
+</code></pre>
+
+<p>and <code>input.reader.groovy</code> is:</p>
+
+<pre><code>
+    import com.eclecticlogic.pedal.loader.dm.SimpleType
+
+    table(SimpleType, ['amount']) {
+        inputReaderReturn = simple1 = row (1000 * index)
+        simple2 = row 2000
+    }
+</code></pre>
+
+<p>Variables created in one script are available to the next script when multiple scripts are passed to the same load() call. The find method can be used to retrieve data that has been created by primary key.</p>
+
+<h3>
+<a id="default-row" class="anchor" href="#default-row" aria-hidden="true"><span class="octicon octicon-link"></span></a>Default row</h3>
+
+<p>Sometimes you want to set certain columns of each row to the same value or the value can easily be defined as an expression. Pedal makes it easy to avoid repeating the value of the column in each row by defining a "default" row closure:</p>
+
+<pre><code>
+        tone = table (MyTable, ['id', 'name', 'insertedOn']) {
+            defaultRow {
+                it.insertedOn = new Date()
+            }
+            row 1, 'Joe'
+            row 2, 'Schmoe'
+            row 3, 'Jane'
+            row 4, 'Jack'
+        }
+
+
+</code></pre>
+
+<h3>
+<a id="custom-functions" class="anchor" href="#custom-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom functions</h3>
+
+<p>You can define custom functions that should be available within the load script. To define a custom-function, use the <code>.withCustomMethod</code> method on Loader passing in a closure:</p>
+
+<pre><code>        Map&lt;String, Object&gt; variables = loader //
+                .withCustomMethod("doubler", new Closure&lt;Object&gt;(this) {
+
+                    @Override
+                    public Object call(Object... args) {
+                        Integer i = (Integer) args[0];
+                        return i * 2;
+                    }
+                }).withScriptDirectory("loader") //
+                .load("customMethod.loader.groovy");
+
+</code></pre>
+
+<p><code>doubler</code> is now a custom-function that can be called within your script:</p>
+
+<pre><code>
+     myvar = doubler 200
+
+</code></pre>
+
+<h3>
+<a id="find-and-flush" class="anchor" href="#find-and-flush" aria-hidden="true"><span class="octicon octicon-link"></span></a>Find and Flush</h3>
+
+<p>The find(Class, id) method is available to your DSL scripts to load records by JPA entity class and primary key. The flush() method does what you would think it should - flush the JPA session to the database.</p>
+
+<p>See the src/test/resources/loader folder of the pedal-loader source for more examples.</p>
+        </section>
+
+        <footer>
+          Pedal-loader is maintained by <a href="https://github.com/eclecticlogic">eclecticlogic</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+                  <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-54980372-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+      </div>
+    </div>
+  </body>
+</html>
