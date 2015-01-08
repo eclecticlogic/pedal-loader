@@ -69,8 +69,7 @@
 
 <p>If you are using @ComponentScan, include the <code>com.eclecticlogic.pedal.loader</code> package in the packages to be scanned. If you are using a Spring managed unit test, setup your test as shown below:</p>
 
-<pre><code>
-     @RunWith(SpringJUnit4ClassRunner.class)
+<pre><code>     @RunWith(SpringJUnit4ClassRunner.class)
      @SpringApplicationConfiguration(classes = JpaConfiguration.class)
      public class MyDatabaseTest {
 
@@ -87,7 +86,6 @@
             ...
         }
     }
-
 </code></pre>
 
 <h2>
@@ -97,9 +95,7 @@
 
 <p>The Loader interface provides a number of methods to specify your script and input variables for the script. Here are some ways to launch the script:</p>
 
-<pre><code>
-    loader.withScriptDirectory("myScripts").load("basicdata.groovy");
-
+<pre><code>    loader.withScriptDirectory("myScripts").load("basicdata.groovy");
 </code></pre>
 
 <p>This specifies that the loader should read the script basicdata.groovy contained within a classpath directory called myScripts. The file could just as well have been specified with the directory as <code>myScripts\basicdata.groovy</code>. However, the withScriptDirectory allows you to setup a well known directory and have all other calls simply reference the script by name without worry about relative paths.</p>
@@ -118,12 +114,10 @@
 
 <p>The table method should have a closure should have one more more row lines:</p>
 
-<pre><code>
-   rowsCreated = table(MyEntity, ['id', 'name', 'age']) {
+<pre><code>   rowsCreated = table(MyEntity, ['id', 'name', 'age']) {
     row value1, value2, value3 ...
     row value1, value2, value3 ....
    }
-
 </code></pre>
 
 <p>The values are what you'd populate in the JPA entity, not in the database. So for a foreign key, you'd pass the @JoinColumn object. For a character field mapped to an Enum, you'd pass the actual Enum</p>
@@ -165,8 +159,7 @@
         row pkStart++, 'Lee Elementary', SchoolType.ELEMENTARY, '1 Lee Rd'
         row pkStart++, 'Park View School', SchoolType.MIDDLE, '10 Elm Street'
         highSchool = row pkStart++, 'Mountain Top High', SchoolType.HIGH, '12 Dream Street'
-    } 
-
+    }   
 </code></pre>
 
 <p>Sometimes the groovy compiler can get confused in evaluating the syntax for the columns. To help the compiler, wrap the column values in parenthesis:</p>
@@ -210,20 +203,17 @@
 
 <p>You can also call scripts from within scripts. Use the <code>load()</code> method. The load method accepts a list of script names or a map of <code>namespace:script-name</code>.</p>
 
-<pre><code>
-    output = load('a': 'simple.loader.groovy', 'b': 'simple.loader.groovy') 
+<pre><code>    output = load('a': 'simple.loader.groovy', 'b': 'simple.loader.groovy') 
     assert output.a.simple1.amount == 20
 
     myIndex = 101
     inputReaderVars = withInput(['index': myIndex]).load('input.reader.groovy')
     assert inputReaderVars.inputReaderReturn.amount == 101000
-
 </code></pre>
 
 <p>where <code>simple.loader.groovy</code> is:</p>
 
-<pre><code>
-    import com.eclecticlogic.pedal.loader.dm.SimpleType
+<pre><code>    import com.eclecticlogic.pedal.loader.dm.SimpleType
 
     table(SimpleType, ['amount']) {
         simple1 = row 10
@@ -233,8 +223,7 @@
 
 <p>and <code>input.reader.groovy</code> is:</p>
 
-<pre><code>
-    import com.eclecticlogic.pedal.loader.dm.SimpleType
+<pre><code>    import com.eclecticlogic.pedal.loader.dm.SimpleType
 
     table(SimpleType, ['amount']) {
         inputReaderReturn = simple1 = row (1000 * index)
@@ -249,18 +238,15 @@
 
 <p>Sometimes you want to set certain columns of each row to the same value or the value can easily be defined as an expression. Pedal makes it easy to avoid repeating the value of the column in each row by defining a "default" row closure:</p>
 
-<pre><code>
-        tone = table (MyTable, ['id', 'name', 'insertedOn']) {
-            defaultRow {
-                it.insertedOn = new Date()
-            }
-            row 1, 'Joe'
-            row 2, 'Schmoe'
-            row 3, 'Jane'
-            row 4, 'Jack'
+<pre><code>    tone = table (MyTable, ['id', 'name', 'insertedOn']) {
+        defaultRow {
+            it.insertedOn = new Date()
         }
-
-
+        row 1, 'Joe'
+        row 2, 'Schmoe'
+        row 3, 'Jane'
+        row 4, 'Jack'
+    }
 </code></pre>
 
 <h3>
@@ -268,24 +254,21 @@
 
 <p>You can define custom functions that should be available within the load script. To define a custom-function, use the <code>.withCustomMethod</code> method on Loader passing in a closure:</p>
 
-<pre><code>        Map&lt;String, Object&gt; variables = loader //
-                .withCustomMethod("doubler", new Closure&lt;Object&gt;(this) {
+<pre><code>    Map&lt;String, Object&gt; variables = loader //
+            .withCustomMethod("doubler", new Closure&lt;Object&gt;(this) {
 
-                    @Override
-                    public Object call(Object... args) {
-                        Integer i = (Integer) args[0];
-                        return i * 2;
-                    }
-                }).withScriptDirectory("loader") //
-                .load("customMethod.loader.groovy");
-
+                @Override
+                public Object call(Object... args) {
+                    Integer i = (Integer) args[0];
+                    return i * 2;
+                }
+            }).withScriptDirectory("loader") //
+            .load("customMethod.loader.groovy");
 </code></pre>
 
 <p><code>doubler</code> is now a custom-function that can be called within your script:</p>
 
-<pre><code>
-     myvar = doubler 200
-
+<pre><code>     myvar = doubler 200
 </code></pre>
 
 <h3>
