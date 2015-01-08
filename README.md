@@ -77,10 +77,15 @@ The scripts are simple groovy files. To insert rows into a table, use the table(
 
 The method returns a list of entities created in the closure.
 
-The closure should have one more more lines of the format:
+The table method should have a closure should have one more more row lines:
 
 ```
+
+   rowsCreated = table(MyEntity, ['id', 'name', 'age']) {
 	row value1, value2, value3 ...
+    row value1, value2, value3 ....
+   }
+
 ```
 
 The values are what you'd populate in the JPA entity, not in the database. So for a foreign key, you'd pass the @JoinColumn object. For a character field mapped to an Enum, you'd pass the actual Enum
