@@ -33,7 +33,6 @@ Create an instance of `Loader` (concrete class `com.eclecticlogic.pedal.loader.i
 If you are using @ComponentScan, include the `com.eclecticlogic.pedal.loader` package in the packages to be scanned. If you are using a Spring managed unit test, setup your test as shown below:
 
 ```
-
      @RunWith(SpringJUnit4ClassRunner.class)
      @SpringApplicationConfiguration(classes = JpaConfiguration.class)
      public class MyDatabaseTest {
@@ -51,7 +50,6 @@ If you are using @ComponentScan, include the `com.eclecticlogic.pedal.loader` pa
             ...
         }
     }
-
 ```
   
  
@@ -62,9 +60,7 @@ The pedal data loader is accessed via the Loader interface. Create your load scr
 The Loader interface provides a number of methods to specify your script and input variables for the script. Here are some ways to launch the script:
 
 ```
-
     loader.withScriptDirectory("myScripts").load("basicdata.groovy");
-
 ```
 This specifies that the loader should read the script basicdata.groovy contained within a classpath directory called myScripts. The file could just as well have been specified with the directory as `myScripts\basicdata.groovy`. However, the withScriptDirectory allows you to setup a well known directory and have all other calls simply reference the script by name without worry about relative paths.
 
@@ -80,12 +76,10 @@ The method returns a list of entities created in the closure.
 The table method should have a closure should have one more more row lines:
 
 ```
-
    rowsCreated = table(MyEntity, ['id', 'name', 'age']) {
 	row value1, value2, value3 ...
     row value1, value2, value3 ....
    }
-
 ```
 
 The values are what you'd populate in the JPA entity, not in the database. So for a foreign key, you'd pass the @JoinColumn object. For a character field mapped to an Enum, you'd pass the actual Enum
@@ -130,8 +124,7 @@ The value is now available as a property called pkStart to the script (and to `s
 		row pkStart++, 'Lee Elementary', SchoolType.ELEMENTARY, '1 Lee Rd'
 		row pkStart++, 'Park View School', SchoolType.MIDDLE, '10 Elm Street'
 		highSchool = row pkStart++, 'Mountain Top High', SchoolType.HIGH, '12 Dream Street'
-	} 
-	
+	} 	
 ```    
 
 Sometimes the groovy compiler can get confused in evaluating the syntax for the columns. To help the compiler, wrap the column values in parenthesis:
@@ -180,20 +173,17 @@ If you are invoking multiple scripts and some of the scripts return values that 
 You can also call scripts from within scripts. Use the `load()` method. The load method accepts a list of script names or a map of `namespace:script-name`.
 
 ```
-
    	output = load('a': 'simple.loader.groovy', 'b': 'simple.loader.groovy')	
 	assert output.a.simple1.amount == 20
 
 	myIndex = 101
 	inputReaderVars = withInput(['index': myIndex]).load('input.reader.groovy')
 	assert inputReaderVars.inputReaderReturn.amount == 101000
-
 ``` 
 
 where `simple.loader.groovy` is:
 
 ```
-
 	import com.eclecticlogic.pedal.loader.dm.SimpleType
 	
 	table(SimpleType, ['amount']) {
@@ -205,7 +195,6 @@ where `simple.loader.groovy` is:
 and `input.reader.groovy` is:
 
 ```
-
 	import com.eclecticlogic.pedal.loader.dm.SimpleType
 
 	table(SimpleType, ['amount']) {
@@ -221,18 +210,15 @@ Variables created in one script are available to the next script when multiple s
 Sometimes you want to set certain columns of each row to the same value or the value can easily be defined as an expression. Pedal makes it easy to avoid repeating the value of the column in each row by defining a "default" row closure:
 
 ```
-
-        tone = table (MyTable, ['id', 'name', 'insertedOn']) {
-            defaultRow {
-                it.insertedOn = new Date()
-            }
-            row 1, 'Joe'
-			row 2, 'Schmoe'
-			row 3, 'Jane'
-			row 4, 'Jack'
+    tone = table (MyTable, ['id', 'name', 'insertedOn']) {
+        defaultRow {
+            it.insertedOn = new Date()
         }
-
-
+        row 1, 'Joe'
+		row 2, 'Schmoe'
+		row 3, 'Jane'
+		row 4, 'Jack'
+    }
 ```
 
 ### Custom functions
@@ -240,26 +226,23 @@ Sometimes you want to set certain columns of each row to the same value or the v
 You can define custom functions that should be available within the load script. To define a custom-function, use the `.withCustomMethod` method on Loader passing in a closure:
 
 ```
-        Map<String, Object> variables = loader //
-                .withCustomMethod("doubler", new Closure<Object>(this) {
+    Map<String, Object> variables = loader //
+            .withCustomMethod("doubler", new Closure<Object>(this) {
 
-                    @Override
-                    public Object call(Object... args) {
-                        Integer i = (Integer) args[0];
-                        return i * 2;
-                    }
-                }).withScriptDirectory("loader") //
-                .load("customMethod.loader.groovy");
-
+                @Override
+                public Object call(Object... args) {
+                    Integer i = (Integer) args[0];
+                    return i * 2;
+                }
+            }).withScriptDirectory("loader") //
+            .load("customMethod.loader.groovy");
 ```  
 
 `doubler` is now a custom-function that can be called within your script:
 
 
 ```
-
      myvar = doubler 200
-
 ```
 
 ### Find and Flush
