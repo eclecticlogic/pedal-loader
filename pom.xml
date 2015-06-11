@@ -19,7 +19,7 @@
 
     <scm>
         <url>git@github.com:eclecticlogic/pedal-loader.gt</url>
-        <developerConnection>scm:git:git@github.com:eclecticlogic/pedal-loader.git</developerConnection>
+        <developerConnection>scm:git:git@github.com-eclectic:eclecticlogic/pedal-loader.git</developerConnection>
         <connection>scm:git:git@github.com:eclecticlogic/pedal-loader.git</connection>
         <tag>HEAD</tag>
     </scm>
