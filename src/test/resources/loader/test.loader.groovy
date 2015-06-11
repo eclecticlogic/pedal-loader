@@ -4,7 +4,7 @@ import com.eclecticlogic.pedal.loader.dm.Widget
 
 
 output = load('a': 'simple.loader.groovy', 'b': 'simple.loader.groovy')
-assert output.a.simple1.amount == 20
+assert output.a.simple1.amount == 10
 
 myIndex = 101
 inputReaderVars = withInput(['index': myIndex]).load('input.reader.groovy')
