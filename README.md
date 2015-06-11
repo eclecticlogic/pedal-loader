@@ -10,7 +10,7 @@ Download the pedal-loader jar from Maven central:
 ```
 	<groupId>com.eclecticlogic</groupId>
 	<artifactId>pedal-loader</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 ```
 
 Minimum dependencies that you need to provide in your application:
@@ -250,3 +250,10 @@ You can define custom functions that should be available within the load script.
 The find(Class, id) method is available to your DSL scripts to load records by JPA entity class and primary key. The flush() method does what you would think it should - flush the JPA session to the database.
 
 See the src/test/resources/loader folder of the pedal-loader source for more examples.
+
+### Release notes
+
+# 1.0.1 
+
+- Fixed a failing unit test.
+- Changed java_home reference in pom to standard value.
