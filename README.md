@@ -26,7 +26,7 @@ Minimum dependencies that you need to provide in your application:
 
 #### Vanilla setup
 
-Create an instance of `Loader` (concrete class `com.eclecticlogic.pedal.loader.impl.LoaderImpl`) and give it a reference to an `EntityManager`. 
+For classpath-based loading, create an instance of `Loader` (concrete class `com.eclecticlogic.pedal.loader.impl.LoaderImpl`) and give it a reference to an `EntityManager`.  For filesystem-based loading, create an instance of `com.eclecticlogic.pedal.loader.impl.FileSystemLoaderImpl` instead of `com.eclecticlogic.pedal.loader.impl.LoaderImpl`.
 
 #### Spring 
 
@@ -62,7 +62,7 @@ The Loader interface provides a number of methods to specify your script and inp
 ```
     loader.withScriptDirectory("myScripts").load("basicdata.groovy");
 ```
-This specifies that the loader should read the script basicdata.groovy contained within a classpath directory called myScripts. The file could just as well have been specified with the directory as `myScripts\basicdata.groovy`. However, the withScriptDirectory allows you to setup a well known directory and have all other calls simply reference the script by name without worry about relative paths.
+This specifies that the loader should read the script basicdata.groovy contained within a classpath or filesystem directory called myScripts. The file could just as well have been specified with the directory as `myScripts\basicdata.groovy`. However, the withScriptDirectory allows you to setup a well known directory and have all other calls simply reference the script by name without worry about relative paths.
 
 ### Script Format
 
