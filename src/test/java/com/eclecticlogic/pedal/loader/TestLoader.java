@@ -11,12 +11,16 @@
  **/
 package com.eclecticlogic.pedal.loader;
 
-import groovy.lang.Closure;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +29,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.eclecticlogic.pedal.loader.dm.SimpleType;
+import com.eclecticlogic.pedal.loader.impl.FileSystemLoaderImpl;
+
+import groovy.lang.Closure;
 
 /**
  * @author kabram.
@@ -33,11 +40,19 @@ import com.eclecticlogic.pedal.loader.dm.SimpleType;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = JpaConfiguration.class)
 public class TestLoader {
-
+	private static final String[] SCRIPT_FILE_NAMES = new String[] {
+		"customMethod.loader.groovy",
+		"input.reader.groovy",
+		"simple.loader.groovy",
+		"test.loader.groovy"
+	};
+	
     @Autowired
     private Loader loader;
 
-
+    @Autowired
+    private EntityManager entityManager;
+    
     @SuppressWarnings("unchecked")
     @Test
     @Transactional
@@ -56,13 +71,32 @@ public class TestLoader {
     @Test
     @Transactional
     public void testLoadWithinLoadScript() {
-        Map<String, Object> variables = loader.withScriptDirectory("loader") //
-                .load("test.loader.groovy");
+        Map<String, Object> variables = loader
+    		.withScriptDirectory("loader") 
+            .load("test.loader.groovy");
         Map<String, Object> output = (Map<String, Object>) variables.get("output");
         Map<String, Object> avars = (Map<String, Object>) output.get("a");
         Assert.assertEquals(((SimpleType) avars.get("simple1")).getAmount(), 10);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    @Transactional
+    public void testLoadFromFileSystem() 
+    	throws IOException 
+    {
+    	File tempFolder = copyScriptsToFilesystem();
+    	
+    	Loader fileSystemLoader = 
+    		new FileSystemLoaderImpl(entityManager);
+    	
+        Map<String, Object> variables = fileSystemLoader
+    		.withScriptDirectory(tempFolder.getAbsolutePath()) 
+            .load("test.loader.groovy");
+        Map<String, Object> output = (Map<String, Object>) variables.get("output");
+        Map<String, Object> avars = (Map<String, Object>) output.get("a");
+        Assert.assertEquals(((SimpleType) avars.get("simple1")).getAmount(), 10);
+    }
 
     @SuppressWarnings("serial")
     @Test
@@ -81,4 +115,31 @@ public class TestLoader {
         Assert.assertEquals(variables.get("myvar"), 400);
     }
 
+    /**
+     * Copy the Pedal Loader test scripts from the classloader
+     * to the file system.
+     * 
+     * @return
+     * @throws IOException
+     */
+	private File copyScriptsToFilesystem() 
+		throws IOException 
+	{
+    	// Copy the test scripts to a temporary location on the file system...
+    	File tempFolder = File.createTempFile("pedalloader_", ".tst");
+    	tempFolder.delete();
+    	tempFolder.mkdirs();
+    	
+    	for (String name : SCRIPT_FILE_NAMES) {
+    		File outputFile = new File(tempFolder, name);
+    		
+    		try (InputStream scriptStream = getClass().getClassLoader().getResourceAsStream("loader/" + name)) {
+    			try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+    				IOUtils.copy(scriptStream, fos);
+    			}
+    		}
+    	}
+    	
+		return tempFolder;
+	}
 }
