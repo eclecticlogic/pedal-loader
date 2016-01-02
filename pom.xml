@@ -4,7 +4,7 @@
     <name>Pedal Loader</name>
     <groupId>com.eclecticlogic</groupId>
     <artifactId>pedal-loader</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <description>A DSL for data loading that is particularly suited for unit-testing with the database. The load scripts work at the JPA entity level (not database columns and values but JPA entity properties and "converted" types).</description>
@@ -21,7 +21,7 @@
         <url>git@github.com:eclecticlogic/pedal-loader.gt</url>
         <developerConnection>scm:git:git@github.com-eclectic:eclecticlogic/pedal-loader.git</developerConnection>
         <connection>scm:git:git@github.com:eclecticlogic/pedal-loader.git</connection>
-        <tag>pedal-loader-1.0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
