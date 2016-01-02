@@ -38,6 +38,7 @@ public class LoaderImpl extends AbstractLoaderImpl implements Loader {
         super(entityManager);
     }
     
+    @Override
 	protected ScriptExecutor createScriptExecutor() {
 	    ScriptExecutor executor = new ScriptExecutor(entityManager);
 	    executor.setScriptDirectory(scriptDirectory);
