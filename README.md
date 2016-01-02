@@ -10,7 +10,7 @@ Download the pedal-loader jar from Maven central:
 ```
 	<groupId>com.eclecticlogic</groupId>
 	<artifactId>pedal-loader</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 ```
 
 Minimum dependencies that you need to provide in your application:
@@ -252,6 +252,10 @@ The find(Class, id) method is available to your DSL scripts to load records by J
 See the src/test/resources/loader folder of the pedal-loader source for more examples.
 
 ### Release notes
+
+# 1.0.2
+
+- Support for file system based script loading and associated refactoring by [csetera](https://github.com/csetera)
 
 # 1.0.1 
 
