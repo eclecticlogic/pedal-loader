@@ -18,7 +18,7 @@ def i = 0;
         defaultRow {
             it.status = Status.ACTIVE
         }
-        row "${name}_${i++}", [true, false, true, false, false, false, false], ['create', 'update'], [1, 2, 3, 6, 10], 'abc'
+        row "${name}_${i++}", new BitSet(1, 0, 1, 0, 0, 0, 0), ['create', 'update'], [1, 2, 3, 6, 10], 'abc'
     }
     def et = tone[0]
     

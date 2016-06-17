@@ -253,6 +253,10 @@ See the src/test/resources/loader folder of the pedal-loader source for more exa
 
 ### Release notes
 
+# 1.1.0 
+
+- Upgraded to use Hibernate 5.x and corresponding Pedal dialect 1.2
+
 # 1.0.2
 
 - Support for file system based script loading and associated refactoring by [csetera](https://github.com/csetera)

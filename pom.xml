@@ -175,15 +175,27 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>${version.hibernate}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>2.3.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>4.3.0.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>4.3.0.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>4.3.0.RELEASE</version>
             <scope>provided</scope>
         </dependency>
 
@@ -215,7 +227,7 @@
         <dependency>
             <groupId>com.eclecticlogic</groupId>
             <artifactId>pedal-dialect</artifactId>
-            <version>1.0.0</version>
+            <version>1.2.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
@@ -223,8 +235,8 @@
     </dependencies>
 
     <properties>
-        <version.hibernate>4.3.6.Final</version.hibernate>
-        <version.spring>4.0.6.RELEASE</version.spring>
+        <version.hibernate>5.2.0.Final</version.hibernate>
+        <version.spring>4.3.0.RELEASE</version.spring>
         <version.slf4j>1.7.7</version.slf4j>
         <version.postgresql.jdbc>9.3-1102-jdbc41</version.postgresql.jdbc>
     </properties>
