@@ -35,9 +35,10 @@ public abstract class AbstractLoaderImpl implements Loader {
 	protected String scriptDirectory;
 	protected Map<String, Closure<Object>> customMethods = new HashMap<>();
 	
-	@PersistenceContext
+	
 	protected EntityManager entityManager;
 
+	@PersistenceContext
 	public void setEntityManager(EntityManager entityManager) {
 	    this.entityManager = entityManager;
 	}

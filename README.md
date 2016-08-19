@@ -253,6 +253,10 @@ See the src/test/resources/loader folder of the pedal-loader source for more exa
 
 ### Release notes
 
+# 1.1.1
+
+- Moved the @PersistenceContext annotation from field to setter method so that users can override the method and the annotation to specify non-default annotation parameters.
+
 # 1.1.0 
 
 - Upgraded to use Hibernate 5.x and corresponding Pedal dialect 1.2
